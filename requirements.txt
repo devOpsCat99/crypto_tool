@@ -29,7 +29,7 @@ pandas
 pillow
 pip
 ply
-protobuf
+protobuf==3.20.*
 pyarrow
 pydeck
 pyparsing
