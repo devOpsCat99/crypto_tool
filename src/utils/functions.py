@@ -36,11 +36,11 @@ def fit_data(x_data, y_data, intialParams, model):
     
     match model:
         case "fourier4":
-            params, _ = curve_fit(fourier4_model_series, xdata_norm, ydata_norm, method="trf")
+            params, _ = curve_fit(fourier4_model_series, xdata_norm, ydata_norm, method="trf", maxfev = 10000)
             return fourier4_model_series(xdata_norm, *params) * (np.max(y_data) - np.min(y_data)) + np.min(y_data)
         
         case "lineal":
-            params, _ = curve_fit(lineal_model_series, xdata_norm, ydata_norm, method="trf")
+            params, _ = curve_fit(lineal_model_series, xdata_norm, ydata_norm, method="trf", maxfev = 10000)
             return lineal_model_series(xdata_norm, *params) * (np.max(y_data) - np.min(y_data)) + np.min(y_data)
         
 def find_local_max_min(data):
