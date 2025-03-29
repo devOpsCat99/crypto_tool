@@ -36,9 +36,9 @@ class App():
     def createConfig(self):
         col1, col2 = st.columns(2)
         with col1:
-            selected_coin = st.selectbox("Coin:", self.__coins, index=0)
+            selected_coin = st.selectbox("Coin:", self.__coins, index=2)
         with col2:
-            selected_time_period = st.selectbox("Time period (days):", self.__time_periods, index=1)
+            selected_time_period = st.selectbox("Time period (days):", self.__time_periods, index=2)
             
         st.write(f"Your fitting configuration: {selected_coin} with a time period of {selected_time_period}.")
         
