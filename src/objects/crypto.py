@@ -4,6 +4,7 @@ import pandas                      as pd
 import utils.functions             as functions
 import matplotlib.pyplot           as plt
 import matplotlib.dates            as mdates
+import plotly.graph_objects        as go
 from   objects.trendMaxMinInfo     import trendMaxMinInfo
 from   objects.trendReferenceLimit import trendReferenceLimit
 
@@ -80,7 +81,8 @@ class crypto():
         self.__limitReference(len(self.__trendInfo.get_localIdxs()))
         
     def executePlotting(self, plotFlag):
-        return self.__plotting(plotFlag)
+        #return self.__plotting(plotFlag)
+        return  self.__plotting_interactive(plotFlag)
         
     def executeAll(self, plotFlag = False):
         try:
@@ -157,6 +159,87 @@ class crypto():
             plt.show()
         
         return figure
-     
+        
+    def __plotting_interactive(self, plotFlag):
+        
+        fig = go.Figure()
+
+        # Línea de precios
+        fig.add_trace(go.Scatter(
+            x=self.__times,
+            y=self.__prices,
+            mode='lines',
+            name=f"Price [{self.__cryptoCnf.get_currency()}]",
+            line=dict(color='royalblue', width=1.5)
+        ))
+
+        # Línea de tendencia
+        fig.add_trace(go.Scatter(
+            x=self.__times,
+            y=self.__fittedPrices,
+            mode='lines',
+            name="Tendencia",
+            line=dict(color='crimson', width=3)
+        ))
+
+        # Línea vertical de referencia
+        fig.add_trace(go.Scatter(
+            x=[self.__times[self.__trendReference.get_refIdx()]] * 2,
+            y=[min(self.__prices), max(self.__prices)],
+            mode='lines',
+            name="Ref. Vertical",
+            line=dict(color="gray", width=1, dash="dash")
+        ))
+
+        # Línea horizontal de referencia
+        fig.add_trace(go.Scatter(
+            x=[min(self.__times), max(self.__times)],
+            y=[self.__trendReference.get_refPrice()] * 2,
+            mode='lines',
+            name="Ref. Horizontal",
+            line=dict(color="gray", width=1, dash="dash")
+        ))
+
+        # Punto de referencia
+        fig.add_trace(go.Scatter(
+            x=[self.__times[self.__trendReference.get_refIdx()]],
+            y=[self.__trendReference.get_refPrice()],
+            mode='markers',
+            name="Referencia",
+            marker=dict(color='black', size=8)
+        ))
+
+        # Línea de ajuste posterior a la referencia
+        fit_prices = functions.fit_data(
+            self.__timesDecYear[self.__trendReference.get_refIdx():],
+            self.__fittedPrices[self.__trendReference.get_refIdx():],
+            np.ones(2), "lineal"
+        )
+        fig.add_trace(go.Scatter(
+            x=self.__times[self.__trendReference.get_refIdx():],
+            y=fit_prices,
+            mode='lines',
+            name="Ajuste",
+            line=dict(color='black', width=3)
+        ))
+
+        # Configuración de diseño
+        fig.update_layout(
+            title="Análisis de Precios",
+            xaxis=dict(title="Tiempo"),
+            yaxis=dict(title=f"Price [{self.__cryptoCnf.get_currency()}]"),
+            plot_bgcolor="white",
+            hovermode="x",
+            xaxis_showgrid=True,
+            yaxis_showgrid=True,
+            xaxis_gridcolor="gray",
+            yaxis_gridcolor="gray"
+        )
+
+        if plotFlag:
+            print("SAVING PLOT")
+
+        return fig
+    
     def __str__(self):
         return f"Coin Object: {self.__name}"
