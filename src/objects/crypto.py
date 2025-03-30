@@ -170,7 +170,8 @@ class crypto():
             y=self.__prices,
             mode='lines',
             name=f"Price [{self.__cryptoCnf.get_currency()}]",
-            line=dict(color='royalblue', width=1.5)
+            line=dict(color='royalblue', width=1.5),
+            hoverinfo="none"
         ))
 
         # Línea de tendencia
@@ -179,7 +180,8 @@ class crypto():
             y=self.__fittedPrices,
             mode='lines',
             name=f"Trend [{self.__cryptoCnf.get_currency()}]",
-            line=dict(color='crimson', width=3)
+            line=dict(color='crimson', width=3),
+            hoverinfo="x+y"
         ))
 
         # Línea vertical de referencia
@@ -187,7 +189,8 @@ class crypto():
             x=[self.__times[self.__trendReference.get_refIdx()]] * 2,
             y=[min(self.__prices), max(self.__prices)],
             mode='lines',
-            line=dict(color="gray", width=1, dash="dash")
+            line=dict(color="gray", width=1, dash="dash"),
+            hoverinfo="none"
         ))
 
         # Línea horizontal de referencia
@@ -195,7 +198,8 @@ class crypto():
             x=[min(self.__times), max(self.__times)],
             y=[self.__trendReference.get_refPrice()] * 2,
             mode='lines',
-            line=dict(color="gray", width=1, dash="dash")
+            line=dict(color="gray", width=1, dash="dash"),
+            hoverinfo="none"
         ))
 
         # Punto de referencia
@@ -203,7 +207,8 @@ class crypto():
             x=[self.__times[self.__trendReference.get_refIdx()]],
             y=[self.__trendReference.get_refPrice()],
             mode='markers',
-            marker=dict(color='black', size=8)
+            marker=dict(color='black', size=8),
+            hoverinfo="none"
         ))
 
         # Línea de ajuste posterior a la referencia
@@ -216,7 +221,8 @@ class crypto():
             x=self.__times[self.__trendReference.get_refIdx():],
             y=fit_prices,
             mode='lines',
-            line=dict(color='black', width=3)
+            line=dict(color='black', width=3),
+            hoverinfo="none"
         ))
 
         fig.add_annotation(
@@ -224,6 +230,7 @@ class crypto():
             y=self.__prices[-1],
             text=f"{self.__trendReference.get_refImprovement():.2f} %",
             showarrow=False,
+            xanchor="left",
             font=dict(size=12, color="black", family="Arial Black")
         )
         
