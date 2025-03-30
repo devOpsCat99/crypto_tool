@@ -28,6 +28,7 @@ packaging
 pandas
 pillow
 pip
+plotly
 ply
 protobuf==3.20.*
 pyarrow
