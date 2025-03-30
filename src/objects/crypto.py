@@ -178,7 +178,7 @@ class crypto():
             x=self.__times,
             y=self.__fittedPrices,
             mode='lines',
-            name="Tendencia",
+            name=f"Trend [{self.__cryptoCnf.get_currency()}]",
             line=dict(color='crimson', width=3)
         ))
 
@@ -187,7 +187,6 @@ class crypto():
             x=[self.__times[self.__trendReference.get_refIdx()]] * 2,
             y=[min(self.__prices), max(self.__prices)],
             mode='lines',
-            name="Ref. Vertical",
             line=dict(color="gray", width=1, dash="dash")
         ))
 
@@ -196,7 +195,6 @@ class crypto():
             x=[min(self.__times), max(self.__times)],
             y=[self.__trendReference.get_refPrice()] * 2,
             mode='lines',
-            name="Ref. Horizontal",
             line=dict(color="gray", width=1, dash="dash")
         ))
 
@@ -205,7 +203,6 @@ class crypto():
             x=[self.__times[self.__trendReference.get_refIdx()]],
             y=[self.__trendReference.get_refPrice()],
             mode='markers',
-            name="Referencia",
             marker=dict(color='black', size=8)
         ))
 
@@ -219,21 +216,30 @@ class crypto():
             x=self.__times[self.__trendReference.get_refIdx():],
             y=fit_prices,
             mode='lines',
-            name="Ajuste",
             line=dict(color='black', width=3)
         ))
 
+        fig.add_annotation(
+            x=self.__times.values[-1],
+            y=self.__prices[-1],
+            text=f"{self.__trendReference.get_refImprovement():.2f} %",
+            showarrow=False,
+            font=dict(size=12, color="black", family="Arial Black")
+        )
+        
         # Configuración de diseño
         fig.update_layout(
-            title="Análisis de Precios",
-            xaxis=dict(title="Tiempo"),
-            yaxis=dict(title=f"Price [{self.__cryptoCnf.get_currency()}]"),
+            xaxis=dict(
+                title="Time",
+                showgrid=True, gridcolor="lightgray", gridwidth=0.5
+            ),
+            yaxis=dict(
+                title=f"Price [{self.__cryptoCnf.get_currency()}]",
+                showgrid=True, gridcolor="lightgray", gridwidth=0.5
+            ),
             plot_bgcolor="white",
             hovermode="x",
-            xaxis_showgrid=True,
-            yaxis_showgrid=True,
-            xaxis_gridcolor="gray",
-            yaxis_gridcolor="gray"
+            showlegend=False  # Oculta la leyenda
         )
 
         if plotFlag:
