@@ -171,7 +171,7 @@ class crypto():
             mode='lines',
             name=f"Price [{self.__cryptoCnf.get_currency()}]",
             line=dict(color='royalblue', width=1.5),
-            hoverinfo="none"
+            hoverinfo="x+y"
         ))
 
         # Línea de tendencia
