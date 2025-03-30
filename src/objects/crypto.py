@@ -232,9 +232,6 @@ class crypto():
             showarrow=False,
             font=dict(size=12, color="black", family="Arial Black"),
             xref="paper",  # Fija la anotación en el espacio relativo del gráfico
-            yref="paper",  # Fija la anotación en el espacio relativo del gráfico
-            xanchor="left",  # Anclar la anotación hacia la izquierda
-            yanchor="bottom"  # Anclar la anotación hacia abajo
         )
         
         # Configuración de diseño
