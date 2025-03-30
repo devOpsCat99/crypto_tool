@@ -48,7 +48,7 @@ class App():
     def createCrypto(self):
         try:
             currentValue, rentability, __, __, figureCrypto, success = crypto(cryptoConfiguration((self.__selected_coin).lower(), self.__selected_time_period), modelConfiguration()).executeAll(False) 
-            st.pyplot(figureCrypto)
+            st.plotly_chart(figureCrypto)
         except:
             st.write("Data unavailable.")
         
