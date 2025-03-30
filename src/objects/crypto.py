@@ -229,9 +229,7 @@ class crypto():
             x=self.__times.values[-1],
             y=self.__prices[-1],
             text=f"{self.__trendReference.get_refImprovement():.2f} %",
-            showarrow=False,
             font=dict(size=12, color="black", family="Arial Black"),
-            xref="paper",  # Fija la anotación en el espacio relativo del gráfico
         )
         
         # Configuración de diseño
