@@ -171,7 +171,7 @@ class crypto():
             mode='lines',
             name=f"Price [{self.__cryptoCnf.get_currency()}]",
             line=dict(color='royalblue', width=1.5),
-            hoverinfo="x+y"
+            hoverinfo="x+y+name"
         ))
 
         # Línea de tendencia
@@ -181,7 +181,7 @@ class crypto():
             mode='lines',
             name=f"Trend [{self.__cryptoCnf.get_currency()}]",
             line=dict(color='crimson', width=3),
-            hoverinfo="x+y"
+            hoverinfo="x+y+name"
         ))
 
         # Línea vertical de referencia
@@ -226,7 +226,7 @@ class crypto():
         ))
 
         fig.add_annotation(
-            x=max(self.__times.values),
+            x=self.__times.values[-30],
             y=self.__prices[-1],
             text=f"{self.__trendReference.get_refImprovement():.2f} %",
             showarrow=False,
