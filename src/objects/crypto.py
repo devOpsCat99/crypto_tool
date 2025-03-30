@@ -226,12 +226,15 @@ class crypto():
         ))
 
         fig.add_annotation(
-            x=self.__times.values[-30],
+            x=self.__times.values[-1],
             y=self.__prices[-1],
             text=f"{self.__trendReference.get_refImprovement():.2f} %",
             showarrow=False,
-            xanchor="left",
-            font=dict(size=12, color="black", family="Arial Black")
+            font=dict(size=12, color="black", family="Arial Black"),
+            xref="paper",  # Fija la anotación en el espacio relativo del gráfico
+            yref="paper",  # Fija la anotación en el espacio relativo del gráfico
+            xanchor="left",  # Anclar la anotación hacia la izquierda
+            yanchor="bottom"  # Anclar la anotación hacia abajo
         )
         
         # Configuración de diseño
