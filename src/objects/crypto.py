@@ -226,7 +226,7 @@ class crypto():
         ))
 
         fig.add_annotation(
-            x=self.__times.values[-1],
+            x=max(self.__times.values),
             y=self.__prices[-1],
             text=f"{self.__trendReference.get_refImprovement():.2f} %",
             showarrow=False,
