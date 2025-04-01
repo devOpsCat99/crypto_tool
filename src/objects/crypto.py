@@ -80,16 +80,18 @@ class crypto():
     def executeLimitReference(self):
         self.__limitReference(len(self.__trendInfo.get_localIdxs()))
         
-    def executePlotting(self, plotFlag):
-        #return self.__plotting(plotFlag)
-        return  self.__plotting_interactive(plotFlag)
+    def executePlotting(self, interactivePlotFlag):
+        if interactivePlotFlag:
+            return  self.__plotting_interactive()
+        else:
+            return self.__plotting()
         
-    def executeAll(self, plotFlag = False):
+    def executeAll(self, interactivePlotFlag = False):
         try:
             self.executeFitData()
             self.executeFindMaxMin()
             self.executeLimitReference()
-            self.__figureCrypto = self.executePlotting(plotFlag)
+            self.__figureCrypto = self.executePlotting(interactivePlotFlag)
             return self.__prices[-1], self.__trendReference.get_refImprovement(), pd.DataFrame({"time": self.__times, "price": self.__prices, "fittedPrice": self.__fittedPrices}), self.__trendReference, self.__figureCrypto, True
         except:
             return [], [], [], [], [], False       
@@ -124,7 +126,7 @@ class crypto():
             if np.abs(self.__trendInfo.get_localImprovement()[Nlocal - 1]) < np.abs(self.__modelCnf.get_minLocalDiff()):
                 self.__limitReference(Nlocal - 2)      
     
-    def __plotting(self, plotFlag):        
+    def __plotting(self):        
         plt.style.use('seaborn-v0_8-darkgrid')
         plt.rcParams['font.family'] = 'serif'
         figure, ax = plt.subplots(figsize=(10, 6))
@@ -154,14 +156,12 @@ class crypto():
         ax.set_ylim([min(self.__prices), max(self.__prices)])
         ax.grid(True, which='both', axis='both', color='gray', linestyle=':', linewidth=0.5)
         ax.set_ylabel(f"Price [{self.__cryptoCnf.get_currency()}]", fontsize=12)
-        if plotFlag:
-            figure.savefig("grafico2_mejorado.png", format="png", dpi=500, bbox_inches="tight")
-            plt.show()
+        figure.savefig("grafico2_mejorado.png", format="png", dpi=500, bbox_inches="tight")
+        plt.show()
         
         return figure
         
-    def __plotting_interactive(self, plotFlag):
-        
+    def __plotting_interactive(self):       
         fig = go.Figure()
 
         # Línea de precios
@@ -226,11 +226,12 @@ class crypto():
         ))
 
         fig.add_annotation(
-            x=self.__times.values[0],
-            y=self.__prices[-1],
-            text=f"{self.__trendReference.get_refImprovement():.2f} %",
-            font=dict(size=12, color="black", family="Arial Black"),
-        )
+             x=self.__times.iloc[-1],
+             y=self.__prices[-1],
+             text=f"{self.__trendReference.get_refImprovement():.2f} %",
+             font=dict(size=12, color="black", family="Arial Black"),
+              showarrow=False
+         )
         
         # Configuración de diseño
         fig.update_layout(
@@ -244,12 +245,9 @@ class crypto():
             ),
             plot_bgcolor="white",
             hovermode="x",
-            showlegend=False  # Oculta la leyenda
+            showlegend=False,
+            autosize=True
         )
-
-        if plotFlag:
-            print("SAVING PLOT")
-
         return fig
     
     def __str__(self):

@@ -12,7 +12,9 @@ class App():
         # Initialise 
         self.__selected_coin = []
         self.__selected_time_period = []
-    
+        self.__interactive_plot = []
+        self.__currency = []
+        
     # Getters
     def getCoins(self):
         return self.__coins
@@ -26,29 +28,58 @@ class App():
     def getSelectedTimePeriod(self):
         return self.__selected_time_period
     
+    def getInteractivePlot(self):
+        return self.__interactive_plot
+    
+    def getCurrency(self):
+        return self.__currency
+    
     # Public methods
     def writeTitle(self, title):
         st.title(title)
         
     def writeText(self, text):
-        st.write(text)
-    
-    def createConfig(self):
-        col1, col2 = st.columns(2)
-        with col1:
-            selected_coin = st.selectbox("Coin:", self.__coins, index=2)
-        with col2:
-            selected_time_period = st.selectbox("Time period (days):", self.__time_periods, index=2)
-            
-        st.write(f"Your fitting configuration: {selected_coin} with a time period of {selected_time_period}.")
+        st.write(text)            
+                    
+    def createCoinSelector(self):
+        self.__selected_coin = st.selectbox("Coin:", self.__coins, index=2)
         
-        self.__selected_coin        = selected_coin
-        self.__selected_time_period = selected_time_period
+    def createTimePeriodSelector(self):
+        self.__selected_time_period = st.radio("Time period (days):", options=self.__time_periods, index = 2, horizontal = True)
+    
+    def createPlotSelector(self):
+        self.__interactive_plot = st.toggle("Interactive plot", value = False)
+    
+    def createCurrencySelector(self):
+        if "currency" not in st.session_state:
+            st.session_state.currency = "usd"
+
+        if st.button("€" if st.session_state.currency == "usd" else "$"): # inverted symbols as it represents future currency to select
+            st.session_state.currency = "eur" if st.session_state.currency == "usd" else "usd"
+            st.rerun() # since button updates before currency by streamlit functionality
+        
+        self.__currency = st.session_state.currency
+
+    def createConfig(self):
+        col1, col2 = st.columns([1, 4.5])
+        with col1:
+            self.createCoinSelector()
+        with col2:
+            self.createTimePeriodSelector()
+        self.createCurrencySelector()   
+        self.createPlotSelector()
         
     def createCrypto(self):
         try:
-            currentValue, rentability, __, __, figureCrypto, success = crypto(cryptoConfiguration((self.__selected_coin).lower(), self.__selected_time_period), modelConfiguration()).executeAll(False) 
-            st.plotly_chart(figureCrypto)
+            currentValue, rentability, __, __, figureCrypto, success = crypto(cryptoConfiguration((self.__selected_coin).lower(), self.__selected_time_period, currency = self.__currency), modelConfiguration()).executeAll(self.__interactive_plot) 
+            __, colPlotting, __ = st.columns([1.9, 1.4, 1.9])
+            with colPlotting:
+                st.markdown(f"###### +{currentValue:.3f} {self.__currency} ({rentability:.2f} %)")
+            
+            if not self.__interactive_plot:
+                st.pyplot(figureCrypto, use_container_width=True)
+            elif self.__interactive_plot:
+                st.plotly_chart(figureCrypto, use_container_width=True)
         except:
             st.write("Data unavailable.")
         
