@@ -103,7 +103,7 @@ class App():
             with colAPI:
                 st.markdown(f"###### {self.__api}: {self.__selected_coin}({self.__currency})")
             with colPlotting:
-                st.markdown(f"###### +{currentValue:.3f} {self.__currency} ({rentability:.2f} %)")
+                st.markdown(f"###### +{currentValue:.4f} {self.__currency} ({rentability:.2f} %)")
             
             if not self.__interactive_plot:
                 st.pyplot(figureCrypto, use_container_width=True)
