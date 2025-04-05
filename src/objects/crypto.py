@@ -7,6 +7,7 @@ import matplotlib.dates            as mdates
 import plotly.graph_objects        as go
 from   objects.trendMaxMinInfo     import trendMaxMinInfo
 from   objects.trendReferenceLimit import trendReferenceLimit
+from   objects.crypto_configuration import cryptoConfiguration_coingecko, cryptoConfiguration_bitvavo
 
 
 
@@ -98,8 +99,14 @@ class crypto():
         
     # private methods
     def __load_data(self):
-        data                = pd.DataFrame(((requests.get(self.__cryptoCnf.get_full_url(), verify=True)).json()) ["prices"], columns=['timestamp', 'price'])
-        self.__prices       = data['price'].values
+        if isinstance(self.__cryptoCnf, cryptoConfiguration_bitvavo):   
+            data                = (pd.DataFrame(((requests.get(self.__cryptoCnf.get_full_url(), verify=True)).json()), columns=['timestamp', 'open', 'high', 'low', 'close', 'volume']))[::-1].reset_index(drop=True) # reverse order to have the most recent data at the end
+            self.__prices       = ((data['high']).astype(float).values + (data['low']).astype(float).values) / 2
+            
+        elif isinstance(self.__cryptoCnf, cryptoConfiguration_coingecko):
+            data                = pd.DataFrame(((requests.get(self.__cryptoCnf.get_full_url(), verify=True)).json()) ['prices'], columns=['timestamp', 'price'])
+            self.__prices       = data['price'].values
+
         self.__times        = pd.to_datetime(data['timestamp'], unit='ms', utc=True)
         self.__timesDecYear = functions.pdTime_to_decYear(self.__times)
      
@@ -226,7 +233,7 @@ class crypto():
         ))
 
         fig.add_annotation(
-             x=self.__times.iloc[-1],
+             x=self.__times.iloc[-1], # because [-1] does not work with pandas
              y=self.__prices[-1],
              text=f"{self.__trendReference.get_refImprovement():.2f} %",
              font=dict(size=12, color="black", family="Arial Black"),

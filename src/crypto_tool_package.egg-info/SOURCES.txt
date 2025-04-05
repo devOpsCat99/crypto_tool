@@ -13,5 +13,6 @@ src/objects/trendReferenceLimit.py
 src/run/__init__.py
 src/run/app.py
 src/run/run.py
+src/run/st.py
 src/utils/__init__.py
 src/utils/functions.py

@@ -1,6 +1,6 @@
 import streamlit as st
 from objects.crypto import crypto
-from objects.crypto_configuration import cryptoConfiguration
+from objects.crypto_configuration import cryptoConfiguration_coingecko, cryptoConfiguration_bitvavo
 from objects.model_configuration import modelConfiguration
 
 class App():
@@ -34,6 +34,9 @@ class App():
     def getCurrency(self):
         return self.__currency
     
+    def getApi(self):
+        return self.__api
+    
     # Public methods
     def writeTitle(self, title):
         st.title(title)
@@ -52,7 +55,7 @@ class App():
     
     def createCurrencySelector(self):
         if "currency" not in st.session_state:
-            st.session_state.currency = "usd"
+            st.session_state.currency = "eur"
 
         if st.button("€" if st.session_state.currency == "usd" else "$"): # inverted symbols as it represents future currency to select
             st.session_state.currency = "eur" if st.session_state.currency == "usd" else "usd"
@@ -60,19 +63,45 @@ class App():
         
         self.__currency = st.session_state.currency
 
+    def createApiSelector(self):
+        if "api" not in st.session_state:
+            st.session_state.api = "Bitvavo"
+
+        if st.button("Bitvavo" if st.session_state.api == "Coingecko" else "Coingecko"): # inverted symbols as it represents future API to select
+            st.session_state.api = "Bitvavo" if st.session_state.api == "Coingecko" else "Coingecko"
+            st.rerun() # since button updates before api by streamlit functionality
+        
+        self.__api = st.session_state.api
+
     def createConfig(self):
         col1, col2 = st.columns([1, 4.5])
         with col1:
             self.createCoinSelector()
         with col2:
             self.createTimePeriodSelector()
-        self.createCurrencySelector()   
+        col3, col4 = st.columns([1, 15])
+        with col3:
+            self.createCurrencySelector()
+        with col4:
+            self.createApiSelector()   
         self.createPlotSelector()
         
     def createCrypto(self):
         try:
-            currentValue, rentability, __, __, figureCrypto, success = crypto(cryptoConfiguration((self.__selected_coin).lower(), self.__selected_time_period, currency = self.__currency), modelConfiguration()).executeAll(self.__interactive_plot) 
-            __, colPlotting, __ = st.columns([1.9, 1.4, 1.9])
+            if self.__api == "Coingecko":
+                currentValue, rentability, __, __, figureCrypto, success = crypto(cryptoConfiguration_coingecko((self.__selected_coin).lower(), self.__selected_time_period, currency = self.__currency), modelConfiguration()).executeAll(self.__interactive_plot) 
+            
+            elif self.__api == "Bitvavo":            
+                if self.__currency == "usd":
+                    st.session_state.currency = "eur"
+                    self.__currency = st.session_state.currency
+                    st.rerun() # since button updates before currency by streamlit functionality
+                self.writeText("Bitvavo API only supports EUR currency.")
+                currentValue, rentability, __, __, figureCrypto, success = crypto(cryptoConfiguration_bitvavo((self.__selected_coin).lower(), self.__selected_time_period), modelConfiguration()).executeAll(self.__interactive_plot) 
+            
+            colAPI, colPlotting, __ = st.columns([1.4, 1.4, 1.4])
+            with colAPI:
+                st.markdown(f"###### {self.__api}: {self.__selected_coin}({self.__currency})")
             with colPlotting:
                 st.markdown(f"###### +{currentValue:.3f} {self.__currency} ({rentability:.2f} %)")
             
@@ -80,7 +109,7 @@ class App():
                 st.pyplot(figureCrypto, use_container_width=True)
             elif self.__interactive_plot:
                 st.plotly_chart(figureCrypto, use_container_width=True)
-        except:
+        except Exception as e:
             st.write("Data unavailable.")
         
     def executeApp(self):
