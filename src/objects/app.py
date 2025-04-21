@@ -51,7 +51,7 @@ class App():
         self.__selected_time_period = st.radio("Time period (days):", options=self.__time_periods, index = 2, horizontal = True)
     
     def createPlotSelector(self):
-        self.__interactive_plot = False
+        self.__interactive_plot = st.toggle("Interactive plot", key="interactive_plot")
          
     def createCurrencySelector(self):
         if "currency" not in st.session_state:
