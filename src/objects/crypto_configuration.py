@@ -130,13 +130,15 @@ class cryptoConfiguration_bitvavo(cryptoConfiguration):
     def get_full_url(self):
         return self.__full_url
     
+    def get_latest_url(self):
+        return self.__latest_url                        
     # Private method
     def __create_full_url(self):
         self.__cryptoAcronym = self.__get_acronym(self.__cryptoName)
         self.__cryptoInterval = self.__get_interval(self.__period)
         self.__cryptoSamples = self.__calculate_samples(self.__cryptoInterval, self.__period)
         self.__full_url = f"https://api.bitvavo.com/v2/{self.__cryptoAcronym}-{self.__currency.upper()}/candles?interval={self.__cryptoInterval}&limit={self.__cryptoSamples}"
-
+        self.__latest_url     = f"https://api.bitvavo.com/v2/{self.__cryptoAcronym}-{self.__currency.upper()}/candles?interval=1m&limit=1" # because bitvavo does not include latest measurement in the previous url
     def __get_acronym(self, cryptoName):
         mapping = {
             "bitcoin":     "BTC",

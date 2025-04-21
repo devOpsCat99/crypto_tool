@@ -101,6 +101,8 @@ class crypto():
     def __load_data(self):
         if isinstance(self.__cryptoCnf, cryptoConfiguration_bitvavo):   
             data                = (pd.DataFrame(((requests.get(self.__cryptoCnf.get_full_url(), verify=True)).json()), columns=['timestamp', 'open', 'high', 'low', 'close', 'volume']))[::-1].reset_index(drop=True) # reverse order to have the most recent data at the end
+            data_latest         = pd.DataFrame(((requests.get(self.__cryptoCnf.get_latest_url(), verify=True)).json()), columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+            data.loc[len(data)] = data_latest.iloc[0] # add the latest measurement to the dataframe                                                                                                                                                                            
             self.__prices       = ((data['high']).astype(float).values + (data['low']).astype(float).values) / 2
             
         elif isinstance(self.__cryptoCnf, cryptoConfiguration_coingecko):
